@@ -11,7 +11,7 @@ Add this flake to your Home Manager configuration:
 ```nix
 {
   inputs = {
-    windsurf-flake.url = "github:yourusername/windsurf-flake";
+    windsurf-flake.url = "github:MichaelFisher1997/windsurf-flake";
   };
 
   outputs = { self, home-manager, windsurf-flake, ... }: {
@@ -33,7 +33,7 @@ Add to your NixOS configuration:
 ```nix
 {
   inputs = {
-    windsurf-flake.url = "github:yourusername/windsurf-flake";
+    windsurf-flake.url = "github:MichaelFisher1997/windsurf-flake";
   };
 
   outputs = { self, nixpkgs, windsurf-flake, ... }: {
@@ -53,7 +53,7 @@ Add to your NixOS configuration:
 You can also install it directly:
 
 ```bash
-nix profile install github:yourusername/windsurf-flake
+nix profile install github:MichaelFisher1997/windsurf-flake
 ```
 
 ### Running Without Installation
@@ -65,7 +65,7 @@ nix run github:yourusername/windsurf-flake
 ## Building Locally
 
 ```bash
-git clone https://github.com/yourusername/windsurf-flake.git
+git clone https://github.com/MichaelFisher1997/windsurf-flake.git
 cd windsurf-flake
 nix build
 ```
