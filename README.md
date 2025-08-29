@@ -79,4 +79,4 @@ nix build
 
 ## Version
 
-Current package version: Windsurf 1.12.2
+Current package version: Windsurf 1.12.3
