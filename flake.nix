@@ -2,8 +2,8 @@
   description = "Windsurf Editor - AI-powered code editor";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "https://windsurf-stable.codeiumdata.com/linux-x64/stable/c855b1fa42fce019aedb4b06e6faa69d65ac7fd3/Windsurf-linux-x64-1.12.28.tar.gz";
+    flake-utils.url = "https://windsurf-stable.codeiumdata.com/linux-x64/stable/c855b1fa42fce019aedb4b06e6faa69d65ac7fd3/Windsurf-linux-x64-1.12.28.tar.gz";
   };
 
   outputs = { self, nixpkgs, flake-utils }:
@@ -18,11 +18,11 @@
         packages = {
           windsurf = pkgs.stdenv.mkDerivation rec {
             pname = "windsurf";
-            version = "1.12.20";
+            version = "1.12.28";
 
             src = pkgs.fetchurl {
-              url = "https://windsurf-stable.codeiumdata.com/linux-x64/stable/6e844cf24f683a9b151739f30f5f5c701193ee9b/Windsurf-linux-x64-1.12.20.tar.gz";
-              sha256 = "lCZxsRLu0I42LS6vUBlDEdW4z++VwLZ0E3UQgtDQ9EY=";
+              url = "https://windsurf-stable.codeiumdata.com/linux-x64/stable/c855b1fa42fce019aedb4b06e6faa69d65ac7fd3/Windsurf-linux-x64-1.12.28.tar.gz";
+              sha256 = "04ffd8ghlqsxa7p976yh76rvg10c4y9cdmggdjhl6s09gpiiqy6c";
             };
 
             nativeBuildInputs = with pkgs; [
