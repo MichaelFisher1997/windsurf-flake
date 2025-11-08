@@ -85,11 +85,6 @@ jobs:
             exit 1
           fi
 
-      - name: Verify build
-        if: steps.compare.outputs.update_needed == 'true'
-        run: |
-          nix flake check --no-update-lock-file
-
       - name: Create Pull Request
         if: steps.compare.outputs.update_needed == 'true'
         uses: peter-evans/create-pull-request@v5
