@@ -75,14 +75,20 @@ jobs:
       - name: Get correct hash
         if: steps.compare.outputs.update_needed == 'true'
         run: |
-          nix build 2>&1 | grep "got:" | grep -oP 'sha256-\K[^=]+' > hash.txt
-          if [ -s hash.txt ]; then
-            correct_hash=$(cat hash.txt)
+          set +e
+          nix build 2>&1 | tee build.log
+          status=$?
+          set -e
+          correct_hash=$(rg "got:[[:space:]]+(sha256-[A-Za-z0-9+/=]+)" -or "$1" build.log | head -n1)
+          if [ -z "$correct_hash" ]; then
+            correct_hash=$(rg "got:[^"]*(sha256-[A-Za-z0-9+/=]+)" -or "$1" build.log | head -n1)
+          fi
+          if [ -n "$correct_hash" ]; then
             sed -i "s/sha256 = \"\"/sha256 = \"$correct_hash\"/" flake.nix
             echo "Updated hash to: $correct_hash"
           else
-            echo "Failed to get correct hash"
-            exit 1
+            echo "Failed to extract correct hash from build output"
+            exit $status
           fi
 
       - name: Verify build
