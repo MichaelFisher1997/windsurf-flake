@@ -67,9 +67,12 @@ jobs:
         run: |
           latest_version="${{ steps.latest.outputs.version }}"
           latest_url="${{ steps.latest.outputs.url }}"
-          sed -i "s/version = \"[^\"]*\"/version = \"$latest_version\"/" flake.nix
-          sed -i "s|url = \"[^\"]*\"|url = \"$latest_url\"|" flake.nix
-          sed -i 's/sha256 = "[^"]*"/sha256 = ""/' flake.nix
+          # Update version in windsurf derivation only
+          sed -i '/windsurf = pkgs\.stdenv\.mkDerivation rec {/,/^    }/s/version = "[^"]*"/version = "'"$latest_version"'"/' flake.nix
+          # Update URL in windsurf derivation only  
+          sed -i '/windsurf = pkgs\.stdenv\.mkDerivation rec {/,/^    }/s|url = "[^"]*"|url = "'"$latest_url"'"|' flake.nix
+          # Clear sha256 in windsurf derivation only
+          sed -i '/windsurf = pkgs\.stdenv\.mkDerivation rec {/,/^    }/s/sha256 = "[^"]*"/sha256 = ""/' flake.nix
           echo "Updated flake.nix to version $latest_version"
 
       - name: Get correct hash
@@ -78,7 +81,8 @@ jobs:
           latest_url="${{ steps.latest.outputs.url }}"
           correct_hash=$(nix-prefetch-url "$latest_url")
           if [ -n "$correct_hash" ]; then
-            sed -i "s/sha256 = \"\"/sha256 = \"$correct_hash\"/" flake.nix
+            # Update sha256 in windsurf derivation only
+            sed -i '/windsurf = pkgs\.stdenv\.mkDerivation rec {/,/^    }/s/sha256 = ""/sha256 = "'"$correct_hash"'"/' flake.nix
             echo "Updated hash to: $correct_hash"
           else
             echo "Failed to get correct hash"
