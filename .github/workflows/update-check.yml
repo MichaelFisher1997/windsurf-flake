@@ -55,7 +55,7 @@ jobs:
           current="${{ steps.current.outputs.version }}"
           latest="${{ steps.latest.outputs.version }}"
           
-          if [ "$current" = "$latest_version" ]; then
+          if [ "$current" = "$latest" ]; then
             echo "update_needed=false" >> $GITHUB_OUTPUT
             echo "No update needed. Current version ($current) is latest."
           else
