@@ -32,7 +32,7 @@ jobs:
         id: latest
         run: |
           releases=$(curl -fsSL "https://windsurf.com/editor/releases")
-          latest_version=$(echo "$releases" | grep -oP '^[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          latest_version=$(echo "$releases" | grep -oP 'button[^>]*>[0-9]+\.[0-9]+\.[0-9]+<' | head -1 | grep -oP '[0-9]+\.[0-9]+\.[0-9]+')
           if [ -z "$latest_version" ]; then
             latest_version=$(echo "$releases" | grep -oP '1\.[0-9]+\.[0-9]+' | head -1)
           fi
