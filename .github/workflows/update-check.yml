@@ -76,13 +76,10 @@ jobs:
         if: steps.compare.outputs.update_needed == 'true'
         run: |
           set +e
-          nix build 2>&1 | tee build.log
+          nix build --no-write-lock-file 2>&1 | tee build.log
           status=$?
           set -e
-          correct_hash=$(rg "got:[[:space:]]+(sha256-[A-Za-z0-9+/=]+)" -or "$1" build.log | head -n1)
-          if [ -z "$correct_hash" ]; then
-            correct_hash=$(rg "got:[^"]*(sha256-[A-Za-z0-9+/=]+)" -or "$1" build.log | head -n1)
-          fi
+          correct_hash=$(grep -oP 'got:\s+\Ksha256-[A-Za-z0-9+/=]+' build.log | head -n1)
           if [ -n "$correct_hash" ]; then
             sed -i "s/sha256 = \"\"/sha256 = \"$correct_hash\"/" flake.nix
             echo "Updated hash to: $correct_hash"
