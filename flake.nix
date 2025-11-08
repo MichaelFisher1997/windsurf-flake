@@ -2,8 +2,8 @@
   description = "Windsurf Editor - AI-powered code editor";
 
   inputs = {
-    nixpkgs.url = "https://windsurf-stable.codeiumdata.com/linux-x64/stable/c855b1fa42fce019aedb4b06e6faa69d65ac7fd3/Windsurf-linux-x64-1.12.28.tar.gz";
-    flake-utils.url = "https://windsurf-stable.codeiumdata.com/linux-x64/stable/c855b1fa42fce019aedb4b06e6faa69d65ac7fd3/Windsurf-linux-x64-1.12.28.tar.gz";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs = { self, nixpkgs, flake-utils }:
