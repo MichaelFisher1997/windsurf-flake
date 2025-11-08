@@ -75,17 +75,14 @@ jobs:
       - name: Get correct hash
         if: steps.compare.outputs.update_needed == 'true'
         run: |
-          set +e
-          nix build --no-write-lock-file 2>&1 | tee build.log
-          status=$?
-          set -e
-          correct_hash=$(grep -oP 'got:\s+\Ksha256-[A-Za-z0-9+/=]+' build.log | head -n1)
+          latest_url="${{ steps.latest.outputs.url }}"
+          correct_hash=$(nix-prefetch-url "$latest_url")
           if [ -n "$correct_hash" ]; then
             sed -i "s/sha256 = \"\"/sha256 = \"$correct_hash\"/" flake.nix
             echo "Updated hash to: $correct_hash"
           else
-            echo "Failed to extract correct hash from build output"
-            exit $status
+            echo "Failed to get correct hash"
+            exit 1
           fi
 
       - name: Verify build
