@@ -91,7 +91,7 @@ jobs:
       - name: Verify build
         if: steps.compare.outputs.update_needed == 'true'
         run: |
-          nix build
+          nix build --no-write-lock-file
 
       - name: Create Pull Request
         if: steps.compare.outputs.update_needed == 'true'
