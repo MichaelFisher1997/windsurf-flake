@@ -2,7 +2,6 @@ name: Check for Windsurf Updates
 
 on:
   schedule:
-    # Run daily at 9:00 UTC
     - cron: '0 9 * * *'
   workflow_dispatch:
 
@@ -25,28 +24,29 @@ jobs:
       - name: Get current version
         id: current
         run: |
-          current_version=$(grep -oP 'version = "\K[^"]*' flake.nix)
+          current_version=$(grep -oP 'version = "\K[^\"]*' flake.nix)
           echo "version=$current_version" >> $GITHUB_OUTPUT
           echo "Current version: $current_version"
 
       - name: Get latest Windsurf release info
         id: latest
         run: |
-          # Get the latest release from the API endpoint
-          response=$(curl -s "https://windsurf-stable.codeiumdata.com/linux-x64/stable/latest")
-          
-          # Extract version and URL from response
-          latest_url=$(echo "$response" | grep -oP 'https://[^"]*Windsurf-linux-x64-\K[0-9]+\.[0-9]+\.[0-9]+(?=\.tar\.gz)' | head -1)
-          latest_version=$(echo "$response" | grep -oP 'Windsurf-linux-x64-\K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-          
+          releases=$(curl -fsSL "https://windsurf.com/editor/releases")
+          latest_version=$(echo "$releases" | grep -oP '^[0-9]+\.[0-9]+\.[0-9]+' | head -1)
           if [ -z "$latest_version" ]; then
-            # Fallback: try to parse from a known pattern
-            echo "Could not determine latest version from API"
+            latest_version=$(echo "$releases" | grep -oP '1\.[0-9]+\.[0-9]+' | head -1)
+          fi
+          if [ -z "$latest_version" ]; then
+            echo "Could not determine latest version from releases page"
             exit 1
           fi
-          
+          latest_url=$(echo "$releases" | grep -oP "https://[^\"]*Windsurf-linux-x64-$latest_version\\.tar\\.gz" | head -1)
+          if [ -z "$latest_url" ]; then
+            echo "Could not determine Linux tarball URL for version $latest_version"
+            exit 1
+          fi
           echo "version=$latest_version" >> $GITHUB_OUTPUT
-          echo "url=https://windsurf-stable.codeiumdata.com/linux-x64/stable/latest/Windsurf-linux-x64-$latest_version.tar.gz" >> $GITHUB_OUTPUT
+          echo "url=$latest_url" >> $GITHUB_OUTPUT
           echo "Latest version: $latest_version"
 
       - name: Compare versions
@@ -54,7 +54,6 @@ jobs:
         run: |
           current="${{ steps.current.outputs.version }}"
           latest="${{ steps.latest.outputs.version }}"
-          
           if [ "$current" = "$latest" ]; then
             echo "update_needed=false" >> $GITHUB_OUTPUT
             echo "No update needed. Current version ($current) is latest."
@@ -68,22 +67,15 @@ jobs:
         run: |
           latest_version="${{ steps.latest.outputs.version }}"
           latest_url="${{ steps.latest.outputs.url }}"
-          
-          # Update version and URL in flake.nix
           sed -i "s/version = \"[^\"]*\"/version = \"$latest_version\"/" flake.nix
           sed -i "s|url = \"[^\"]*\"|url = \"$latest_url\"|" flake.nix
-          
-          # Clear the hash to let Nix calculate it
           sed -i 's/sha256 = "[^"]*"/sha256 = ""/' flake.nix
-          
           echo "Updated flake.nix to version $latest_version"
 
       - name: Get correct hash
         if: steps.compare.outputs.update_needed == 'true'
         run: |
-          # Try to build to get the correct hash
           nix build 2>&1 | grep "got:" | grep -oP 'sha256-\K[^=]+' > hash.txt
-          
           if [ -s hash.txt ]; then
             correct_hash=$(cat hash.txt)
             sed -i "s/sha256 = \"\"/sha256 = \"$correct_hash\"/" flake.nix
@@ -107,12 +99,12 @@ jobs:
           title: "Update Windsurf to ${{ steps.latest.outputs.version }}"
           body: |
             Automated update to Windsurf version ${{ steps.latest.outputs.version }}
-            
+
             **Changes:**
             - Updated version from ${{ steps.current.outputs.version }} to ${{ steps.latest.outputs.version }}
             - Updated download URL
             - Updated package hash
-            
+
             This PR was created automatically by the daily update check workflow.
           branch: update-windsurf-${{ steps.latest.outputs.version }}
           delete-branch: true
