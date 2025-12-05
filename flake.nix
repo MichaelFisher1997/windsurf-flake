@@ -18,11 +18,11 @@
         packages = {
           windsurf = pkgs.stdenv.mkDerivation rec {
             pname = "windsurf";
-            version = "1.12.37";
+            version = "1.12.39";
 
             src = pkgs.fetchurl {
-              url = "https://windsurf-stable.codeiumdata.com/linux-x64/stable/03467c19b03b0de9ecb0a0d414300b08ec322f44/Windsurf-linux-x64-1.12.37.tar.gz";
-              sha256 = "0n5l6xi5m4b3xlhl0fipnhgmvm7mjn8yj665b4lr4di61glj09m7";
+              url = "https://windsurf-stable.codeiumdata.com/linux-x64/stable/10ebfa84f4e8b018ef2459063f0293b8e9ac01da/Windsurf-linux-x64-1.12.39.tar.gz";
+              sha256 = "0s0wb12ga57a3y9l5lpy9823mlv4nfwbk6cbcxl9fz6ajy3fqdnf";
             };
 
             nativeBuildInputs = with pkgs; [
