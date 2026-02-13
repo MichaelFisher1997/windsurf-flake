@@ -67,6 +67,9 @@
               mesa
               libxkbcommon
               wayland
+              webkitgtk_4_1
+              libsoup_3
+              libsecret
             ];
 
             runtimeDependencies = with pkgs; [
